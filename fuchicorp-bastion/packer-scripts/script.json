@@ -1,0 +1,57 @@
+{
+  "variables": {
+
+    "google_project_id": "{{env `GOOGLE_PROJECT_ID`}}",
+    "google_creds": "{{env `GOOGLE_APPLICATION_CREDENTIALS`}}"
+
+  },
+
+    "builders": [
+      {
+        "type": "googlecompute",
+        "account_file": "{{user `google_creds`}}",
+        "project_id": "{{user `google_project_id`}}",
+        "source_image": "centos-7-v20200811",
+        "ssh_username": "centos-cloud",
+        "zone": "us-west1-b",
+        "disk_size": "40"
+      }
+    ],
+
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": [
+        "sudo yum install python-pip git jq wget unzip vim centos-release-scl scl-utils-build -y",
+        "sudo yum install  python33 gcc python3 -y",
+        "sudo curl https://storage.googleapis.com/kubernetes-helm/helm-v2.14.0-linux-amd64.tar.gz > ./helm.tar.gz",
+        "sudo tar -xvf ./helm.tar.gz",
+        "sudo mv ./linux-amd64/*  /usr/local/bin/", 
+        "sudo yum install -y yum-utils device-mapper-persistent-data lvm2",
+        "sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo",
+        "sudo yum install -y docker-ce-17.12.1.ce",
+        "sudo systemctl start docker",
+        "sudo systemctl enable docker",
+        "sudo chmod 777 /var/run/docker.sock",
+        "sudo python3 -m pip install awscli",
+        "sudo yum install java-1.8.0-openjdk -y",
+        "sudo yum install groovy -y",
+        "sudo curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.13.0/bin/linux/amd64/kubectl",
+        "sudo mv kubectl /usr/bin",
+        "sudo chmod +x /usr/bin/kubectl",
+        "sudo yum install bind-utils -y",
+        "sudo wget https://releases.hashicorp.com/terraform/0.11.14/terraform_0.11.14_linux_amd64.zip --no-check-certificate",
+        "sudo unzip terraform_0.11.14_linux_amd64.zip",
+        "sudo mv terraform /usr/bin",
+        "sudo chmod +x /usr/bin/terraform",
+        "sudo wget https://releases.hashicorp.com/packer/1.5.1/packer_1.5.1_linux_amd64.zip  -O /tmp/packer_1.5.1_linux_amd64.zip",
+        "sudo unzip /tmp/packer_1.5.1_linux_amd64.zip",                           
+        "sudo mv packer /bin",
+        "sudo yum install docker-compose -y",
+        "sudo docker-compose version"
+      ]
+      
+    }
+  ]
+
+}
